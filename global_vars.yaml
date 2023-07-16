@@ -1,5 +1,5 @@
 ---
 execute_docker_role: true
 execute_swarm_role: true
-execute_traefik_role: true
-execute_portainer_role: true
+execute_traefik_role: false
+execute_portainer_role: false

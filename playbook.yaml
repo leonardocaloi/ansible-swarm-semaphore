@@ -6,7 +6,7 @@
   pre_tasks:
     - name: Atualizar pacotes
       apt:
-        update_cache: no
+        update_cache: yes
   roles:
     - { role: docker, when: execute_docker_role }
     - { role: swarm, when: execute_swarm_role }
