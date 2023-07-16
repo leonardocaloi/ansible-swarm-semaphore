@@ -1,0 +1,6 @@
+all:
+  hosts:
+    ansible:
+      ansible_host: 34.71.58.69
+      ansible_user: ansible
+

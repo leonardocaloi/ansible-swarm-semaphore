@@ -1,0 +1,37 @@
+- name: Instalar pacote jsondiff
+  pip:
+    name: jsondiff
+    state: present
+
+- name: Copy traefik configuration
+  copy:
+    src: /mnt/c/Users/caloi/ansible-swarm-semaphore/roles/traefik/templates/traefik.yaml.j2
+    dest: /home/ansible/traefik.yaml.j2
+
+- name: Render Traefik configuration
+  template:
+    src: /mnt/c/Users/caloi/ansible-swarm-semaphore/roles/traefik/templates/traefik.yaml.j2
+    dest: /home/ansible/traefik.yaml
+
+- name: Ensure Traefik stack is deployed
+  docker_stack:
+    state: present
+    name: traefik
+    compose:
+      - "/home/ansible/traefik.yaml.j2"
+    prune: yes
+    resolve_image: always
+
+# - name: List directory content
+#   command: ls -la /path
+#   register: output
+
+# - debug: var=output.stdout_lines
+
+# - name: Render Traefik configuration
+#   template:
+#     src: "{{ role_path }}/templates/traefik.yaml.j2"
+#     dest: "/path/to/traefik.yaml"
+
+# - name: Deploy Traefik stack
+#   command: docker stack deploy --prune --resolve-image always -c /path/to/traefik.yaml traefik

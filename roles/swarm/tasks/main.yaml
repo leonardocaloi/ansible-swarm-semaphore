@@ -1,0 +1,22 @@
+- name: Verificar se o nó já faz parte de um Swarm
+  command: docker info --format "{{'{{'}}.Swarm.LocalNodeState{{'}}'}}"
+  register: node_state
+  changed_when: false
+  failed_when: false
+  ignore_errors: true
+
+- name: Inicializar o Swarm
+  shell: docker swarm init
+  when: node_state.stdout != "active"
+
+- name: Verificar se a rede overlay network_public já existe
+  shell: docker network inspect network_public
+  register: network_public_result
+  changed_when: false
+  failed_when: false
+  ignore_errors: true
+
+- name: Criar a rede overlay network_public
+  shell: docker network create --driver=overlay network_public
+  become: true
+  when: network_public_result.rc != 0

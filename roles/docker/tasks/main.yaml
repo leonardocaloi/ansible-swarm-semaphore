@@ -1,0 +1,38 @@
+---
+- name: Instalar pacotes necessários
+  apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: yes
+  vars:
+    packages:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg2
+      - software-properties-common
+
+- name: Adicionar a chave GPG do Docker
+  shell: curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+
+- name: Adicionar o repositório Docker
+  shell: echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+
+- name: Atualizar o APT
+  apt:
+    update_cache: yes
+
+- name: Instalar Docker CE
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+
+- name: Adicionar usuário ao grupo docker
+  become: true
+  user:
+    name: ansible
+    groups: docker
+    append: yes
+  notify: Reiniciar Docker
+
