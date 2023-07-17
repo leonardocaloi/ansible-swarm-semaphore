@@ -11,28 +11,46 @@
       - curl
       - gnupg2
       - software-properties-common
+    retries: 5
+    delay: 60
 
-- name: Adicionar a chave GPG do Docker
-  shell: curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
-
-- name: Adicionar o repositório Docker
-  shell: echo "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-
-- name: Atualizar o APT
-  apt:
-    update_cache: yes
+- name: Verificar se Docker está instalado
+  shell: docker --version
+  register: docker_check
+  changed_when: false
+  failed_when: false
+  ignore_errors: true
 
 - name: Instalar Docker CE
+  shell: curl -fsSL https://get.docker.com | bash
+  become: true
+  when: docker_check.rc != 0
+
+# - name: Adicionar usuário ao grupo docker
+#   become: true
+#   user:
+#     name: ansible
+#     groups: docker
+#     append: yes
+#   notify: Reiniciar Docker
+
+# Preparar o ambiente para usar templates .j2
+
+- name: Garantir que os pacotes necessários estejam instalados
   apt:
-    name: docker-ce
+    name: "{{ item }}"
     state: present
     update_cache: yes
+  become: yes
+  loop:
+    - python3
+    - python3-pip
 
-- name: Adicionar usuário ao grupo docker
-  become: true
-  user:
-    name: ansible
-    groups: docker
-    append: yes
-  notify: Reiniciar Docker
-
+- name: Garantir que as bibliotecas necessárias do Python estejam instaladas
+  pip:
+    name: "{{ item }}"
+    state: present
+    executable: pip3
+  loop:
+    - jsondiff
+    - pyyaml

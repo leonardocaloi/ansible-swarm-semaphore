@@ -7,8 +7,16 @@
     - name: Atualizar pacotes
       apt:
         update_cache: yes
+    - name: Configurar hostname
+      hostname:
+        name: "ansible.manager"
   roles:
     - { role: docker, when: execute_docker_role }
     - { role: swarm, when: execute_swarm_role }
     - { role: traefik, when: execute_traefik_role }
     - { role: portainer, when: execute_portainer_role }
+    - { role: postgres, when: execute_postgres_role }
+    - { role: pgadmin, when: execute_pgadmin_role }
+    - { role: redis, when: execute_redis_role }
+    - { role: n8n, when: execute_n8n_role }
+    - { role: codechat, when: execute_codechat_role }

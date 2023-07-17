@@ -1,0 +1,4 @@
+---
+pgadmin_hostname: pga.ventros.com.br
+PGADMIN_DEFAULT_EMAIL: leonardo@ventros.com.br
+PGADMIN_DEFAULT_PASSWORD: password

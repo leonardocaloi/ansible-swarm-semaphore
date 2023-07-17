@@ -1,18 +1,13 @@
-- name: Copy portainer configuration
-  copy:
-    src: /mnt/c/Users/caloi/ansible-swarm-semaphore/roles/portainer/templates/portainer.yaml.j2
-    dest: /home/ansible/portainer.yaml.j2
-
-- name: Render Portainer configuration
+- name: Gerar arquivo de configuração do portainer a partir do template
   template:
-    src: /mnt/c/Users/caloi/ansible-swarm-semaphore/roles/portainer/templates/portainer.yaml.j2
-    dest: /home/ansible/portainer.yaml
+    src: "portainer.yaml.j2"
+    dest: "/tmp/portainer.yaml"
 
 - name: Ensure portainer stack is deployed
   docker_stack:
     state: present
     name: portainer
     compose:
-      - "/home/ansible/portainer.yaml.j2"
+      - "/tmp/portainer.yaml"
     prune: yes
     resolve_image: always
