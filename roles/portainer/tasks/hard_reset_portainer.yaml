@@ -1,0 +1,29 @@
+- name: Remove existing Portainer stack
+  docker_stack:
+    state: absent
+    name: portainer
+
+- name: Wait for all Portainer containers to be removed
+  command: docker ps -a --filter "name=portainer" --format "{{'{{.Names}}'}}"
+  register: result
+  retries: 20
+  delay: 5
+  until: result.stdout == ""
+
+- name: Remove Portainer volumes
+  docker_volume:
+    name: "{{ item }}"
+    state: absent
+  loop: 
+    - portainer_data
+
+# *********
+
+- name: Ensure portainer stack is deployed
+  docker_stack:
+    state: present
+    name: portainer
+    compose:
+      - "/tmp/portainer.yaml"
+    prune: yes
+    resolve_image: always

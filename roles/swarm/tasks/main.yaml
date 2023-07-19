@@ -5,9 +5,25 @@
   failed_when: false
   ignore_errors: true
 
-- name: Inicializar o Swarm
-  shell: docker swarm init
+- name: Inicializar o Swarm se não estiver ativo
+  command: docker swarm init
+  register: swarm_init
   when: node_state.stdout != "active"
+
+- name: Obter Swarm ID se o nó acabou de entrar no Swarm
+  set_fact:
+    swarm_id: "{{ swarm_init.stdout | regex_search('Swarm initialized: (.*?) ', '\\1') }}"
+  when: node_state.stdout != "active"
+
+- name: Obter Swarm ID se o nó já fizer parte do Swarm
+  shell: docker info --format "{{'{{'}}.Swarm.NodeID{{'}}'}}"
+  register: swarm_info
+  when: node_state.stdout == "active"
+
+- name: Set Swarm ID se o nó já fizer parte do Swarm
+  set_fact:
+    swarm_id: "{{ swarm_info.stdout }}"
+  when: node_state.stdout == "active"
 
 - name: Verificar se a rede overlay network_public já existe
   shell: docker network inspect network_public

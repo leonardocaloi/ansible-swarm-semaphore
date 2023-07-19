@@ -3,8 +3,11 @@ execute_docker_role: true
 execute_swarm_role: true
 execute_traefik_role: true
 execute_portainer_role: true
+
+execute_portainer_stack_postgres: false
+
 execute_postgres_role: true
-execute_pgadmin_role: true
-execute_redis_role: true
+execute_pgadmin_role: false
+execute_redis_role: false
 execute_n8n_role: false
 execute_codechat_role: false

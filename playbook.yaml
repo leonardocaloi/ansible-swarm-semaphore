@@ -16,7 +16,6 @@
     - { role: traefik, when: execute_traefik_role }
     - { role: portainer, when: execute_portainer_role }
     - { role: postgres, when: execute_postgres_role }
-    - { role: pgadmin, when: execute_pgadmin_role }
-    - { role: redis, when: execute_redis_role }
-    - { role: n8n, when: execute_n8n_role }
-    - { role: codechat, when: execute_codechat_role }
+  tasks:
+    - include_tasks: roles/portainer/stacks/postgres/deploy_postgres.yaml
+      when: execute_portainer_stack_postgres

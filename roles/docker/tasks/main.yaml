@@ -26,14 +26,6 @@
   become: true
   when: docker_check.rc != 0
 
-# - name: Adicionar usuário ao grupo docker
-#   become: true
-#   user:
-#     name: ansible
-#     groups: docker
-#     append: yes
-#   notify: Reiniciar Docker
-
 # Preparar o ambiente para usar templates .j2
 
 - name: Garantir que os pacotes necessários estejam instalados

@@ -1,0 +1,43 @@
+- name: Load environment variables from file
+  set_fact:
+    env_lines: "{{ lookup('file', './roles/portainer/stacks/postgres/.env').splitlines() }}"
+
+- name: Parse environment
+  set_fact:
+    env_vars: "{{ env_vars | default([]) + [{'name': item.split('=')[0], 'value': item.split('=')[1]}] }}"
+  loop: "{{ env_lines }}"
+  when: item != '' and item is not none and '=' in item
+
+- name: Print swarm id
+  debug:
+    var: swarm_id
+
+# - name: Create Postgres Stack
+#   uri:
+#     url: "http://ansible.manager:9000/api/stacks?endpointId=2&type=1&method=string"
+#     method: POST
+#     body_format: json
+#     headers:
+#       Authorization: "Bearer {{ login_portainer.json.jwt }}"
+#     body:
+#       Name: "postgres"
+#       StackFileContent: "{{ lookup('file', 'postgres.yaml') }}"
+#       SwarmID: "{{ swarm_id }}"
+#       Env: "{{ env_vars }}"
+#     status_code: 200
+
+- name: Create Postgres Stack from Git Repository
+  uri:
+    url: "http://ansible.manager:9000/api/stacks?endpointId=2&type=1&method=repository"
+    method: POST
+    body_format: json
+    headers:
+      Authorization: "Bearer {{ login_portainer.json.jwt }}"
+    body:
+      Name: "postgresgithub"
+      RepositoryURL: "https://github.com/leonardocaloi/swarm_stacks/"
+      RepositoryReferenceName: "refs/blob/main"
+      ComposeFilePathInRepository: "postgres/postgres.yaml"
+      SwarmID: "{{ swarm_id }}"
+      Env: "{{ env_vars }}"
+    status_code: 200
