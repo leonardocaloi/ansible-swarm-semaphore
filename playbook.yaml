@@ -15,7 +15,7 @@
     - { role: swarm, when: execute_swarm_role }
     - { role: traefik, when: execute_traefik_role }
     - { role: portainer, when: execute_portainer_role }
-    - { role: postgres, when: execute_postgres_role }
+    # - { role: postgres, when: execute_postgres_role }
   tasks:
     - include_tasks: roles/portainer/stacks/postgres/deploy_postgres.yaml
       when: execute_portainer_stack_postgres
