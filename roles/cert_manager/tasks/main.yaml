@@ -1,0 +1,43 @@
+---
+- name: Criar namespace para o Cert-Manager
+  kubernetes.core.k8s:
+    kind: Namespace
+    name: cert-manager
+    state: present
+
+- name: Adicionar repositório Helm do Cert-Manager
+  kubernetes.core.helm_repository:
+    name: jetstack
+    repo_url: https://charts.jetstack.io
+
+- name: Instalar/Atualizar Cert-Manager
+  kubernetes.core.helm:
+    name: cert-manager
+    namespace: cert-manager
+    chart_ref: jetstack/cert-manager
+    chart_version: v1.3.1
+    state: present
+    values:
+      installCRDs: true
+
+- name: Aguardar até que todos os pods do Cert-Manager estejam prontos
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: cert-manager
+    label_selectors:
+      - app.kubernetes.io/instance=cert-manager
+  register: pods
+  until: pods.resources | length == 3 and (pods.resources | map(attribute='status.phase') | list) == ['Running'] * 3
+  retries: 10
+  delay: 30
+
+- name: Criar ClusterIssuer para o Cert-Manager com template Jinja2
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'clusterissuer.yaml.j2') | from_yaml }}"
+  vars:
+    issuer_name: "letsencrypt-clusterissuer"
+    acme_server_url: "https://acme-v02.api.letsencrypt.org/directory"
+    issuer_email: "leonardo@ventros.com.br"  # Substitua pelo seu email
+    issuer_private_key_secret: "letsencrypt-private-key"
+    ingress_class: "nginx"

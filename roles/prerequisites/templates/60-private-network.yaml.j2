@@ -1,0 +1,8 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:
+      addresses:
+        - "{{ ipv4 }}/16"
+      dhcp4: no

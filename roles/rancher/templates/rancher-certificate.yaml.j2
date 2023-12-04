@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rancher-certificate
+  namespace: cattle-system
+spec:
+  secretName: {{ rancher_helm_values.hostname }}-tls
+  issuerRef:
+    name: letsencrypt-clusterissuer  # Ou o nome do seu ClusterIssuer pré-existente
+    kind: ClusterIssuer
+  commonName: {{ rancher_helm_values.hostname }}
+  dnsNames:
+    - {{ rancher_helm_values.hostname }}

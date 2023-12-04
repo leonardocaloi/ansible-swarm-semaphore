@@ -1,0 +1,9 @@
+---
+longhorn_chart_version: "v1.5.3"
+longhorn_helm_values:
+  hostname: longhorn.ventros.com.br
+  ingress:
+    tls:
+      source: letsEncrypt
+  letsEncrypt:
+    email: leonardo@ventros.com.br

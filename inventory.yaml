@@ -1,6 +1,7 @@
 all:
   hosts:
-    ansible:
-      ansible_host: 34.95.253.212
-      ansible_user: ansible
+    rke2.single-node:
+      ansible_host: 109.205.61.72
+      ansible_user: root
+      ansible_ssh_pass: dNeDO9tDKpLCixM
 

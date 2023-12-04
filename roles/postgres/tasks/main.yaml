@@ -1,0 +1,21 @@
+---
+- name: Criar namespace para o Zalando Postgres Operator
+  kubernetes.core.k8s:
+    kind: Namespace
+    name: postgres-operator
+    state: present
+
+- name: Adicionar repositório Helm do Zalando Postgres Operator
+  kubernetes.core.helm_repository:
+    name: zalando
+    repo_url: https://opensource.zalando.com/postgres-operator/charts/postgres-operator/
+
+- name: Instalar/Atualizar Zalando Postgres Operator
+  kubernetes.core.helm:
+    name: postgres-operator
+    namespace: postgres-operator
+    create_namespace: false
+    chart_ref: zalando/postgres-operator
+    state: present
+    wait: true
+    release_values: "{{ lookup('template', 'postgres-operator-values.yaml.j2') | from_yaml }}"

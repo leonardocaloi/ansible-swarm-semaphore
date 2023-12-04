@@ -1,13 +1,8 @@
 ---
-execute_docker_role: true
-execute_swarm_role: true
-execute_traefik_role: true
-execute_portainer_role: true
-
-execute_portainer_stack_postgres: false
-
-execute_postgres_role: false
-execute_pgadmin_role: false
-execute_redis_role: false
-execute_n8n_role: false
-execute_codechat_role: false
+execute_python_role: false
+execute_prerequisites_role: false
+execute_rke2_role: false
+execute_cert_manager_role: false
+execute_rancher_role: false
+execute_longhorn_role: false
+execute_postgres_role: true

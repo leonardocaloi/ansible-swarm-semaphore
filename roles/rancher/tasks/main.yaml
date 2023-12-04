@@ -1,0 +1,33 @@
+---
+- name: Criar namespace para o Rancher
+  kubernetes.core.k8s:
+    kind: Namespace
+    name: cattle-system
+    state: present
+
+- name: Adicionar repositório Helm do Rancher
+  kubernetes.core.helm_repository:
+    name: rancher-stable
+    repo_url: https://releases.rancher.com/server-charts/stable
+
+- name: Instalar/Atualizar Rancher
+  kubernetes.core.helm:
+    name: rancher
+    namespace: cattle-system
+    chart_ref: rancher-stable/rancher
+    chart_version: "{{ rancher_chart_version }}"
+    state: present
+    wait: true
+    values:
+      ingress:
+        enabled: false
+
+- name: Aplicar Ingress para o Rancher 
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'rancher-ingress.yaml.j2') | from_yaml }}"
+
+- name: Aplicar Certificate para o Rancher
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'rancher-certificate.yaml.j2') | from_yaml }}"

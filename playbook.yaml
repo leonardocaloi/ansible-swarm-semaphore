@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: rke2.single-node
   become: yes
   vars_files:
     - global_vars.yaml
@@ -7,15 +7,23 @@
     - name: Atualizar pacotes
       apt:
         update_cache: yes
-    - name: Configurar hostname
-      hostname:
-        name: "ansible.manager"
   roles:
-    - { role: docker, when: execute_docker_role }
-    - { role: swarm, when: execute_swarm_role }
-    - { role: traefik, when: execute_traefik_role }
-    - { role: portainer, when: execute_portainer_role }
-    # - { role: postgres, when: execute_postgres_role }
-  tasks:
-    - include_tasks: roles/portainer/stacks/postgres/deploy_postgres.yaml
-      when: execute_portainer_stack_postgres
+    - { role: prerequisites, when: execute_prerequisites_role }
+    - { role: python, when: execute_python_role }
+    - { role: rke2, when: execute_rke2_role }
+
+- hosts: rke2.single-node
+  become: yes
+  environment:
+    K8S_AUTH_KUBECONFIG: /etc/rancher/rke2/rke2.yaml
+  vars:
+    ansible_python_interpreter: /opt/ansible_venv/bin/python3
+  vars_files:
+    - global_vars.yaml
+  roles:
+    - { role: cert_manager, when: execute_cert_manager_role }
+    - { role: rancher, when: execute_rancher_role }
+    - { role: longhorn, when: execute_longhorn_role }
+    - { role: postgres, when: execute_postgres_role }
+    
+

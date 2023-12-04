@@ -1,0 +1,34 @@
+- name: Download and install RKE2
+  ansible.builtin.shell: |
+    curl -sfL https://get.rke2.io | sh -
+  args:
+    creates: /usr/local/bin/rke2
+
+- name: Enable and start RKE2 server
+  ansible.builtin.systemd:
+    name: rke2-server
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Check RKE2 server status
+  ansible.builtin.service:
+    name: rke2-server
+    state: started
+
+- name: Add RKE2 to PATH and set KUBECONFIG
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    line: "{{ item }}"
+    state: present
+  loop:
+    - 'export PATH=$PATH:/var/lib/rancher/rke2/bin'
+    - 'export KUBECONFIG=/etc/rancher/rke2/rke2.yaml'
+
+- name: Install Helm
+  ansible.builtin.shell: |
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    chmod 700 get_helm.sh
+    ./get_helm.sh
+  args:
+    creates: /usr/local/bin/helm

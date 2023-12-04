@@ -1,0 +1,27 @@
+global:
+  storageClassName: longhorn
+  walStorageClassName: longhorn
+
+teamId: ventros-prod
+teamName: Ventros Produção
+
+resources:
+  requests:
+    cpu: "1"  # 1 CPU
+    memory: "4Gi"  # 4 GiB
+  limits:
+    cpu: "2"  # 2 CPUs, ou mais, conforme necessário
+    memory: "8Gi"  # 8 GiB, ou mais, conforme necessário
+
+databases:
+  - name: chatwoot
+    size: "40Gi"
+    instance:
+      numberOfInstances: 1
+      defaultUsers: true
+
+  - name: n8n
+    size: "30Gi"
+    instance:
+      numberOfInstances: 1
+      defaultUsers: true

@@ -1,0 +1,59 @@
+---
+- name: Install required packages
+  apt: 
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop: 
+    - vim
+    - curl
+    - wget
+    - git
+    - net-tools
+
+- name: Configurar hostname
+  hostname:
+    name: "{{ hostname }}"
+
+# - name: Descobrir a interface de rede e o nome alternativo
+#   shell: "ip -o link | grep -Eo '2: [^:]+:.*altname [^ ]+'"
+#   register: cmd_output
+#   changed_when: false
+
+# - name: Extrair o nome alternativo da interface
+#   set_fact:
+#     network_interface_altname: "{{ cmd_output.stdout | regex_search('altname (\\S+)', '\\1') | first }}"
+#   when: cmd_output.stdout != ""
+
+# - name: Imprimir o nome alternativo da interface de rede
+#   debug:
+#     msg: "O nome alternativo da interface de rede é {{ network_interface_altname }}"
+
+# - name: Configure network
+#   template:
+#     src: 60-private-network.yaml.j2
+#     dest: /etc/netplan/60-private-network.yaml
+#     mode: 0600
+
+# - name: Apply netplan configuration
+#   become: yes
+#   command: netplan apply
+
+# - name: Collect only network facts
+#   setup:
+#     gather_subset: 
+#       - network
+#   register: network_facts
+#
+# - name: Store facts for specific interface
+#   set_fact:
+#     specific_interface_facts: "{{ network_facts['ansible_facts']['ansible_' + network_interface] }}"
+#
+- name: Configure hosts file
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    owner: root
+    group: root
+    mode: 0644
+

@@ -1,0 +1,27 @@
+---
+- name: Garantir que os pacotes necessários estejam instalados
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - python3
+    - python3-pip
+    - python3-venv
+    - python3-apt
+
+- name: Criar um ambiente virtual
+  command: python3 -m venv /opt/ansible_venv
+  args:
+    creates: /opt/ansible_venv
+
+- name: Garantir que as bibliotecas necessárias do Python estejam instaladas no ambiente virtual
+  pip:
+    name: "{{ item }}"
+    state: present
+    virtualenv: /opt/ansible_venv
+  loop:
+    - jsondiff
+    - pyyaml
+    - psycopg2-binary
+    - kubernetes
